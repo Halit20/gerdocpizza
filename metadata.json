@@ -1,0 +1,6 @@
+{
+  "name": "Gerdoc Pizza",
+  "description": "Premium online pizza ordering system for Gerdoc Pizza in Batllavë / Podujevë, Kosovo with Leaflet.js map, dynamic cart, and WhatsApp submission.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
