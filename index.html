@@ -454,27 +454,56 @@
         }
 
         .product-picture {
-            display: block;
+            display: grid;
+            place-items: center;
+            position: relative;
             width: 100%;
             height: 220px;
             background:
-                radial-gradient(ellipse at 50% 42%, rgba(255, 255, 255, 0.085) 0%, rgba(255, 255, 255, 0.045) 30%, rgba(255, 255, 255, 0.018) 52%, rgba(15, 15, 18, 0) 78%),
-                linear-gradient(180deg, #0f0f12 0%, #101013 72%, #121216 100%);
+                radial-gradient(circle 124px at 50% 48%, rgba(245, 158, 11, 0.12) 0%, rgba(245, 158, 11, 0.055) 38%, rgba(255, 255, 255, 0.025) 58%, transparent 78%),
+                linear-gradient(180deg, #0f0f12 0%, #101013 68%, #121216 100%);
             border-top-left-radius: var(--radius-md);
             border-top-right-radius: var(--radius-md);
             overflow: hidden;
             isolation: isolate;
         }
+        .product-picture::before,
+        .product-picture::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+        .product-picture::before {
+            background:
+                radial-gradient(ellipse at 50% 78%, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.18) 32%, transparent 62%),
+                radial-gradient(circle 118px at 50% 50%, transparent 0%, rgba(255, 255, 255, 0.035) 74%, rgba(245, 158, 11, 0.08) 100%);
+            z-index: 0;
+        }
+        .product-picture::after {
+            background: radial-gradient(circle 156px at 50% 50%, transparent 0%, transparent 76%, rgba(16, 16, 19, 0.24) 91%, #101013 100%);
+            z-index: 2;
+        }
 
         .product-img {
             display: block;
-            width: 100%;
-            height: 100%;
+            position: relative;
+            z-index: 1;
+            width: min(260px, calc(100% - 40px));
+            height: 192px;
+            max-height: calc(100% - 24px);
             object-fit: contain;
-            object-position: center center;
-            padding: 10px 14px;
+            object-position: center 46%;
             box-sizing: border-box;
+            transform: translateY(-4px);
             mix-blend-mode: lighten;
+            filter: saturate(1.08) contrast(1.05) drop-shadow(0 18px 22px rgba(0, 0, 0, 0.36));
+            -webkit-mask-image: radial-gradient(circle 142px at 50% 50%, #000 0%, #000 78%, rgba(0, 0, 0, 0.86) 88%, rgba(0, 0, 0, 0.28) 97%, transparent 100%);
+            mask-image: radial-gradient(circle 142px at 50% 50%, #000 0%, #000 78%, rgba(0, 0, 0, 0.86) 88%, rgba(0, 0, 0, 0.28) 97%, transparent 100%);
+        }
+        .product-card[data-cat="drink"] .product-img {
+            -webkit-mask-image: radial-gradient(ellipse 84px 110px at 50% 50%, #000 0%, #000 72%, rgba(0, 0, 0, 0.72) 84%, rgba(0, 0, 0, 0.22) 94%, transparent 100%);
+            mask-image: radial-gradient(ellipse 84px 110px at 50% 50%, #000 0%, #000 72%, rgba(0, 0, 0, 0.72) 84%, rgba(0, 0, 0, 0.22) 94%, transparent 100%);
         }
 
         .category-tag-inline {
@@ -862,45 +891,105 @@
         .cart-items {
             flex-grow: 1;
             overflow-y: auto;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .cart-item {
+            padding: 18px;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            padding-bottom: 20px;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 68px 1fr;
+            gap: 12px;
+            padding: 12px 0 14px;
             border-bottom: 1px solid var(--border-soft);
         }
-        .cart-item-header {
+        .cart-item:first-child {
+            padding-top: 0;
+        }
+        .cart-item-thumb {
+            width: 68px;
+            height: 68px;
+            border-radius: var(--radius-sm);
+            background:
+                radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.12), rgba(255, 255, 255, 0.03) 54%, transparent 78%),
+                linear-gradient(180deg, #101013 0%, #0b0b0d 100%);
+            border: 1px solid var(--border-soft);
+            overflow: hidden;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+        .cart-item-thumb img {
+            width: 88%;
+            height: 88%;
+            object-fit: contain;
+            mix-blend-mode: lighten;
+            filter: saturate(1.06) contrast(1.04) drop-shadow(0 8px 10px rgba(0, 0, 0, 0.38));
+        }
+        .cart-item-main {
+            min-width: 0;
+        }
+        .cart-item-top {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
+            gap: 10px;
         }
         .cart-item-title {
-            font-weight: 600;
-            font-size: 1.05rem;
+            font-weight: 700;
+            font-size: 0.98rem;
+            line-height: 1.2;
         }
         .cart-item-price {
             font-weight: 700;
             color: var(--primary-accent);
+            font-size: 0.98rem;
+            white-space: nowrap;
         }
         .cart-item-meta {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
+            line-height: 1.35;
+            margin-top: 4px;
+        }
+        .cart-item-size {
+            color: #d4d4d8;
+            font-weight: 600;
+        }
+        .cart-item-extras {
+            margin-top: 2px;
         }
         .cart-item-actions {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .cart-item .qty-control {
+            height: 32px;
+        }
+        .cart-item .qty-btn {
+            width: 30px;
+            font-size: 1rem;
+        }
+        .cart-item .qty-input {
+            width: 30px;
+            font-size: 0.9rem;
         }
         .btn-remove {
             color: var(--danger);
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             font-weight: 600;
+            padding: 6px 8px;
+            border-radius: var(--radius-sm);
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.16);
+            line-height: 1;
+        }
+        .btn-remove:hover {
+            background: rgba(239, 68, 68, 0.14);
         }
 
         .cart-footer {
@@ -914,6 +1003,23 @@
             font-size: 1.2rem;
             font-weight: 700;
             margin-bottom: 20px;
+        }
+
+        @media (max-width: 480px) {
+            .cart-items {
+                padding: 16px 14px;
+            }
+            .cart-item {
+                grid-template-columns: 60px 1fr;
+                gap: 10px;
+            }
+            .cart-item-thumb {
+                width: 60px;
+                height: 60px;
+            }
+            .cart-item-actions {
+                align-items: center;
+            }
         }
 
         /* Modal (WhatsApp/Viber) */
@@ -1716,7 +1822,7 @@
                 const webpImg = item.img.replace(/\.png$/i, '.webp');
 
                 let cardHtml = `
-                    <div class="product-card" id="card-${item.id}">
+                    <div class="product-card" id="card-${item.id}" data-cat="${item.cat}">
                         <picture class="product-picture">
                             <source srcset="${webpImg}" type="image/webp">
                             <img src="${item.img}" alt="${item.name}" class="product-img" loading="lazy" decoding="async">
@@ -1824,11 +1930,12 @@
             const existing = cart.find(c => c.uid === uid);
             if(existing) {
                 existing.qty += qty;
+                existing.img = existing.img || item.img;
             } else {
                 cart.push({
                     uid, id: item.id, name: item.name,
                     size: sName, extras: selectedExtras,
-                    qty: qty, unitPrice: uPrice
+                    qty: qty, unitPrice: uPrice, img: item.img
                 });
             }
             
@@ -1874,24 +1981,36 @@
                     let lineTotal = c.unitPrice * c.qty;
                     totalEur += lineTotal;
                     
-                    let meta = [];
-                    if(c.size) meta.push(c.size);
-                    if(c.extras.length > 0) meta.push(`Shtesa: ${c.extras.join(', ')}`);
+                    const product = MENU.find(item => item.id === c.id);
+                    const imgPath = c.img || (product ? product.img : placeholderPizza);
+                    const webpImg = imgPath.replace(/\.png$/i, '.webp');
+                    const extrasText = c.extras.length > 0 ? `<div class="cart-item-extras">Extra: ${c.extras.join(', ')}</div>` : '';
                     
                     list.innerHTML += `
                         <div class="cart-item">
-                            <div class="cart-item-header">
-                                <div class="cart-item-title">${c.name}</div>
-                                <div class="cart-item-price">${lineTotal.toFixed(2)}€</div>
-                            </div>
-                            <div class="cart-item-meta">${meta.join(' | ')}</div>
-                            <div class="cart-item-actions" style="margin-top:10px;">
-                                <div class="qty-control" style="height:30px;">
-                                    <button class="qty-btn" style="width:28px;" onclick="changeCartQty('${c.uid}', -1)">-</button>
-                                    <input type="text" class="qty-input" style="width:28px; font-size:0.9rem;" value="${c.qty}" readonly>
-                                    <button class="qty-btn" style="width:28px;" onclick="changeCartQty('${c.uid}', 1)">+</button>
+                            <picture class="cart-item-thumb">
+                                <source srcset="${webpImg}" type="image/webp">
+                                <img src="${imgPath}" alt="${c.name}" loading="lazy" decoding="async">
+                            </picture>
+                            <div class="cart-item-main">
+                                <div class="cart-item-top">
+                                    <div>
+                                        <div class="cart-item-title">${c.name}</div>
+                                        <div class="cart-item-meta">
+                                            ${c.size ? `<div class="cart-item-size">${c.size}</div>` : ''}
+                                            ${extrasText}
+                                        </div>
+                                    </div>
+                                    <div class="cart-item-price">${lineTotal.toFixed(2)}€</div>
                                 </div>
-                                <button class="btn-remove" onclick="removeCartItem('${c.uid}')">Hiq ✕</button>
+                                <div class="cart-item-actions">
+                                    <div class="qty-control">
+                                        <button class="qty-btn" onclick="changeCartQty('${c.uid}', -1)">-</button>
+                                        <input type="text" class="qty-input" value="${c.qty}" readonly>
+                                        <button class="qty-btn" onclick="changeCartQty('${c.uid}', 1)">+</button>
+                                    </div>
+                                    <button class="btn-remove" onclick="removeCartItem('${c.uid}')">Hiq</button>
+                                </div>
                             </div>
                         </div>
                     `;
