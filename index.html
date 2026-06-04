@@ -2086,6 +2086,62 @@
         let preparedEncodedMessage = "";
         let preparedOrderMessage = "";
 
+        function cleanField(value, fallback = '') {
+            const text = (value || '').trim();
+            return text || fallback;
+        }
+
+        function getOrderLocationText(orderType) {
+            if(orderType !== 'Dërgesë') return 'Marrje në lokal';
+
+            const lat = cleanField(document.getElementById('f_lat').value);
+            const lng = cleanField(document.getElementById('f_lng').value);
+            if(!lat || !lng) return 'Pa lokacion';
+
+            return `https://www.google.com/maps?q=${lat},${lng}`;
+        }
+
+        function buildOrderMessage(orderType) {
+            const emri = cleanField(document.getElementById('f_emri').value);
+            const mbiemri = cleanField(document.getElementById('f_mbiemri').value);
+            const telefoni = cleanField(document.getElementById('f_tel').value);
+            const adresa = orderType === 'Dërgesë'
+                ? cleanField(document.getElementById('f_adresa').value)
+                : 'Marrje në lokal';
+            const lokacioni = getOrderLocationText(orderType);
+            const komenti = cleanField(document.getElementById('f_koment').value, 'Pa koment');
+
+            let total = 0;
+            const products = cart.map((c, index) => {
+                const lineTotal = c.unitPrice * c.qty;
+                total += lineTotal;
+
+                return `${index + 1}. ${c.name}
+   ${c.size ? `Madhësia: ${c.size}\n   ` : ''}Sasia: ${c.qty}
+   Extra: ${c.extras.length > 0 ? c.extras.join(', ') : 'Pa extra'}
+   Çmimi: ${lineTotal.toFixed(2)} €`;
+            }).join('\n\n');
+
+            return `🍕 POROSI E RE - GERDOC PIZZA
+
+👤 TË DHËNAT E KLIENTIT
+Emri: ${emri}
+Mbiemri: ${mbiemri}
+Telefoni: ${telefoni}
+Adresa: ${adresa}
+Lokacioni: ${lokacioni}
+Koment: ${komenti}
+
+🛒 PRODUKTET E POROSITURA
+${products}
+
+💶 TOTALI
+Totali i porosisë: ${total.toFixed(2)} €
+
+📲 Dërguar nga sistemi i porosive online
+gerdocpizza.com`;
+        }
+
         function processCheckout() {
             // Validation
             if (cart.length === 0) {
@@ -2113,69 +2169,38 @@
                 }
             }
 
-            // Build Message
-            let m = `🍕 *Porosi e re nga Gerdoc Pizza*\n\n`;
-            m += `*Emri:* ${document.getElementById('f_emri').value.trim()}\n`;
-            m += `*Mbiemri:* ${document.getElementById('f_mbiemri').value.trim()}\n`;
-            m += `*Telefoni:* ${document.getElementById('f_tel').value.trim()}\n`;
-            m += `*Lloji i porosisë:* ${tipo}\n`;
-            
-            if(tipo === 'Dërgesë') {
-                m += `*Adresa:* ${document.getElementById('f_adresa').value.trim()}\n`;
-            }
-            
-            m += `\n*Produktet:*\n`;
-            let total = 0;
-            cart.forEach(c => {
-                let st = c.size ? ` - ${c.size}` : '';
-                m += `${c.qty}x ${c.name}${st} - ${(c.unitPrice * c.qty).toFixed(2)}€\n`;
-                if(c.extras.length > 0) m += `   Shtesa: ${c.extras.join(', ')}\n`;
-                total += (c.unitPrice * c.qty);
-            });
-            m += `\n*Totali:* ${total.toFixed(2)}€\n`;
-            
-            let comment = document.getElementById('f_koment').value.trim();
-            if(comment) m += `\n*Koment:* ${comment}\n`;
-
-            if(tipo === 'Dërgesë') {
-                let flat = document.getElementById('f_lat').value;
-                let flng = document.getElementById('f_lng').value;
-                m += `\n*Lokacioni:*\nKoordinatat GPS: ${flat}, ${flng}\n`;
-                m += `Harta: https://www.openstreetmap.org/?mlat=${flat}&mlon=${flng}#map=18/${flat}/${flng}\n`;
-            }
-
-            // Status notice to owner
-            const bBadge = document.getElementById('badge-status');
-            if(bBadge.classList.contains('status-closed')) {
-                m += `\n*(Shënim: Porosia është dërguar jashtë orarit të punës)*`;
-            }
+            const m = buildOrderMessage(tipo);
             
             preparedOrderMessage = m;
             preparedEncodedMessage = encodeURIComponent(m);
             
             // Set Hrefs for Modal Buttons
             document.getElementById('btn-wa').href = `https://wa.me/${PHONE_NUMBER_INT}?text=${preparedEncodedMessage}`;
-            document.getElementById('btn-viber').href = `viber://chat?number=%2B${PHONE_NUMBER_INT}`;
+            document.getElementById('btn-viber').href = `viber://chat?number=%2B${PHONE_NUMBER_INT}&text=${preparedEncodedMessage}`;
             
             document.getElementById('orderModal').classList.add('active');
         }
 
-        function openViberOrder(event) {
+        async function openViberOrder(event) {
             event.preventDefault();
             if(!preparedOrderMessage) return;
 
-            const viberUrl = `viber://chat?number=%2B${PHONE_NUMBER_INT}`;
-            copyTextToClipboard(preparedOrderMessage);
-            showToast("Porosia u kopjua. Hapet Viber - bëni Paste dhe dërgojeni.");
+            const viberChatUrl = `viber://chat?number=%2B${PHONE_NUMBER_INT}&text=${preparedEncodedMessage}`;
+            const viberForwardUrl = `viber://forward?text=${preparedEncodedMessage}`;
+            await copyTextToClipboard(preparedOrderMessage);
+            showToast("Nëse mesazhi nuk shfaqet automatikisht në Viber, mesazhi është kopjuar dhe mund ta bëni paste.");
             closeModal();
-            window.location.href = viberUrl;
+            window.location.href = viberChatUrl;
+            setTimeout(() => {
+                window.location.href = viberForwardUrl;
+            }, 900);
         }
 
         function copyTextToClipboard(text) {
             if(navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(text).catch(() => fallbackCopyText(text));
+                return navigator.clipboard.writeText(text).catch(() => fallbackCopyText(text));
             } else {
-                fallbackCopyText(text);
+                return fallbackCopyText(text);
             }
         }
 
@@ -2189,6 +2214,7 @@
             temp.select();
             try { document.execCommand('copy'); } catch (e) {}
             temp.remove();
+            return Promise.resolve();
         }
 
         function closeModal() {
