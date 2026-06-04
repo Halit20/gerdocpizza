@@ -2091,16 +2091,6 @@
             return text || fallback;
         }
 
-        function getOrderLocationText(orderType) {
-            if(orderType !== 'Dërgesë') return 'Marrje në lokal';
-
-            const lat = cleanField(document.getElementById('f_lat').value);
-            const lng = cleanField(document.getElementById('f_lng').value);
-            if(!lat || !lng) return 'Pa lokacion';
-
-            return `https://www.google.com/maps?q=${lat},${lng}`;
-        }
-
         function buildOrderMessage(orderType) {
             const emri = cleanField(document.getElementById('f_emri').value);
             const mbiemri = cleanField(document.getElementById('f_mbiemri').value);
@@ -2108,37 +2098,57 @@
             const adresa = orderType === 'Dërgesë'
                 ? cleanField(document.getElementById('f_adresa').value)
                 : 'Marrje në lokal';
-            const lokacioni = getOrderLocationText(orderType);
             const komenti = cleanField(document.getElementById('f_koment').value, 'Pa koment');
+            const lat = cleanField(document.getElementById('f_lat').value);
+            const lng = cleanField(document.getElementById('f_lng').value);
+            const hasLocation = orderType === 'Dërgesë' && lat && lng;
+            const googleMaps = hasLocation ? `https://www.google.com/maps?q=${lat},${lng}` : 'Pa lokacion';
+            const openStreetMap = hasLocation ? `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=18/${lat}/${lng}` : 'Pa lokacion';
 
             let total = 0;
             const products = cart.map((c, index) => {
+                const product = MENU.find(item => item.id === c.id);
+                const hasFoodOptions = product && (product.cat === 'pizza' || product.cat === 'samun');
                 const lineTotal = c.unitPrice * c.qty;
+                const lines = [
+                    `${index + 1}. ${cleanField(c.name, 'Produkt')}`
+                ];
+
+                if(hasFoodOptions && c.size) {
+                    lines.push(`Madhesia: ${c.size}`);
+                }
+
+                lines.push(`Sasia: ${c.qty}`);
+
+                if(hasFoodOptions && c.extras && c.extras.length > 0) {
+                    lines.push(`Extra: ${c.extras.join(', ')}`);
+                }
+
+                lines.push(`Cmimi: ${lineTotal.toFixed(2)} €`);
                 total += lineTotal;
 
-                return `${index + 1}. ${c.name}
-   ${c.size ? `Madhësia: ${c.size}\n   ` : ''}Sasia: ${c.qty}
-   Extra: ${c.extras.length > 0 ? c.extras.join(', ') : 'Pa extra'}
-   Çmimi: ${lineTotal.toFixed(2)} €`;
+                return lines.join('\n');
             }).join('\n\n');
 
-            return `🍕 POROSI E RE - GERDOC PIZZA
+            return `POROSI E RE - GERDOC PIZZA
 
-👤 TË DHËNAT E KLIENTIT
+TE DHENAT E KLIENTIT
 Emri: ${emri}
 Mbiemri: ${mbiemri}
 Telefoni: ${telefoni}
 Adresa: ${adresa}
-Lokacioni: ${lokacioni}
+Lokacioni Google Maps: ${googleMaps}
+Lokacioni OpenStreetMap: ${openStreetMap}
 Koment: ${komenti}
 
-🛒 PRODUKTET E POROSITURA
+PRODUKTET E POROSITURA
+
 ${products}
 
-💶 TOTALI
-Totali i porosisë: ${total.toFixed(2)} €
+TOTALI
+Totali i porosise: ${total.toFixed(2)} €
 
-📲 Dërguar nga sistemi i porosive online
+Derguar nga sistemi i porosive online
 gerdocpizza.com`;
         }
 
@@ -2176,7 +2186,7 @@ gerdocpizza.com`;
             
             // Set Hrefs for Modal Buttons
             document.getElementById('btn-wa').href = `https://wa.me/${PHONE_NUMBER_INT}?text=${preparedEncodedMessage}`;
-            document.getElementById('btn-viber').href = `viber://chat?number=%2B${PHONE_NUMBER_INT}&text=${preparedEncodedMessage}`;
+            document.getElementById('btn-viber').href = `viber://forward?text=${preparedEncodedMessage}`;
             
             document.getElementById('orderModal').classList.add('active');
         }
@@ -2185,15 +2195,23 @@ gerdocpizza.com`;
             event.preventDefault();
             if(!preparedOrderMessage) return;
 
-            const viberChatUrl = `viber://chat?number=%2B${PHONE_NUMBER_INT}&text=${preparedEncodedMessage}`;
             const viberForwardUrl = `viber://forward?text=${preparedEncodedMessage}`;
+            let viberOpened = false;
+            const markOpened = () => { viberOpened = true; };
+
             await copyTextToClipboard(preparedOrderMessage);
-            showToast("Nëse mesazhi nuk shfaqet automatikisht në Viber, mesazhi është kopjuar dhe mund ta bëni paste.");
             closeModal();
-            window.location.href = viberChatUrl;
+
+            window.addEventListener('blur', markOpened, { once: true });
+            document.addEventListener('visibilitychange', () => {
+                if(document.hidden) markOpened();
+            }, { once: true });
+
+            window.location.href = viberForwardUrl;
             setTimeout(() => {
-                window.location.href = viberForwardUrl;
-            }, 900);
+                if(viberOpened || document.hidden) return;
+                showToast("Mesazhi u kopjua. Nëse Viber nuk e hap automatikisht mesazhin, bëni paste në Viber.");
+            }, 1200);
         }
 
         function copyTextToClipboard(text) {
