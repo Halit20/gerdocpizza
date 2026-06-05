@@ -2049,6 +2049,10 @@
         }
 
         function initMap() {
+            if(typeof L === 'undefined') {
+                showToast("Harta nuk u ngarkua. Kontrolloni lidhjen me internet.");
+                return;
+            }
             map = L.map('map').setView([BUSINESS_LOCATION.lat, BUSINESS_LOCATION.lng], 14);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
@@ -2070,27 +2074,46 @@
         }
 
         function useMyLocation() {
-            if(navigator.geolocation) {
-                showToast("Po kërkojmë lokacionin tuaj...");
-                navigator.geolocation.getCurrentPosition(pos => {
-                    const lat = pos.coords.latitude;
-                    const lng = pos.coords.longitude;
-                    
+            const isLocalhost = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+            const isHttps = window.location.protocol === 'https:';
+
+            if(!isHttps && !isLocalhost) {
+                showToast("Lokacioni aktual funksionon vetëm në HTTPS ose localhost.");
+                return;
+            }
+
+            if(!navigator.geolocation) {
+                showToast("Shfletuesi juaj nuk mbështet këtë opsion.");
+                return;
+            }
+
+            showToast("Po kërkojmë lokacionin tuaj...");
+            navigator.geolocation.getCurrentPosition(pos => {
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+
+                document.getElementById('f_lat').value = lat;
+                document.getElementById('f_lng').value = lng;
+                locationSelected = true;
+
+                if(map && marker && typeof L !== 'undefined') {
                     const newL = new L.LatLng(lat, lng);
                     map.setView(newL, 16);
                     marker.setLatLng(newL);
-                    
-                    document.getElementById('f_lat').value = lat;
-                    document.getElementById('f_lng').value = lng;
-                    locationSelected = true;
-                    showToast("Lokacioni u vendos me sukses.");
-                    
-                }, err => {
+                }
+
+                showToast("Lokacioni u vendos me sukses.");
+            }, err => {
+                if(err && err.code === 1) {
+                    showToast("Leja për lokacion u refuzua. Ju lutem aktivizoni Location Permission në browser.");
+                } else {
                     showToast("Nuk mundëm të qasemi në lokacionin tuaj.");
-                });
-            } else {
-                showToast("Shfletuesi juaj nuk mbështet këtë opsion.");
-            }
+                }
+            }, {
+                enableHighAccuracy: true,
+                timeout: 12000,
+                maximumAge: 0
+            });
         }
 
 
@@ -2205,13 +2228,17 @@ gerdocpizza.com`;
 
         async function openViberOrder(event) {
             event.preventDefault();
-            if(!preparedOrderMessage) return;
+            const tipo = document.querySelector('input[name="orderType"]:checked').value;
+            const latestOrderMessage = buildOrderMessage(tipo);
+
+            preparedOrderMessage = latestOrderMessage;
+            preparedEncodedMessage = encodeURIComponent(latestOrderMessage);
 
             const viberChatUrl = `viber://chat?number=%2B${PHONE_NUMBER_INT}`;
             let viberOpened = false;
             const markOpened = () => { viberOpened = true; };
 
-            await copyTextToClipboard(preparedOrderMessage);
+            await copyTextToClipboard(latestOrderMessage);
             closeModal();
 
             window.addEventListener('blur', markOpened, { once: true });
@@ -2222,7 +2249,7 @@ gerdocpizza.com`;
             window.location.href = viberChatUrl;
             setTimeout(() => {
                 if(viberOpened || document.hidden) return;
-                showToast("Mesazhi u kopjua. Nëse Viber nuk e hap automatikisht mesazhin, bëni paste në Viber.");
+                showToast("Mesazhi u kopjua. Nëse nuk shfaqet automatikisht në Viber, bëni paste në bisedë.");
             }, 1200);
         }
 
