@@ -1086,6 +1086,44 @@
             flex-direction: column;
             gap: 12px;
         }
+        .viber-modal-box {
+            max-width: 680px;
+            text-align: left;
+        }
+        .viber-modal-box .modal-title,
+        .viber-modal-box .modal-text {
+            text-align: center;
+        }
+        .viber-message {
+            width: 100%;
+            min-height: 320px;
+            max-height: 46vh;
+            resize: vertical;
+            overflow: auto;
+            background: var(--bg-color);
+            color: var(--text-main);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            font: 0.88rem/1.5 Consolas, 'Courier New', monospace;
+            margin-bottom: 16px;
+        }
+        .viber-message:focus {
+            border-color: var(--primary-accent);
+            outline: none;
+        }
+        .viber-instruction {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.45;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+        .viber-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
 
         /* Notice / Toast */
         .store-notice {
@@ -1322,6 +1360,14 @@
             .modal-text {
                 font-size: 0.85rem;
                 margin-bottom: 20px;
+            }
+            .viber-message {
+                min-height: 260px;
+                max-height: 42vh;
+                font-size: 0.8rem;
+            }
+            .viber-actions {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -1590,6 +1636,20 @@
                 <span id="drawer-price" style="color: var(--primary-accent)">0.00€</span>
             </div>
             <button class="btn btn-primary" style="width:100%;" onclick="toggleCart(); scrollToSection('orderSection')">Kalo te pagesa</button>
+        </div>
+    </div>
+
+    <!-- Manual Viber send modal -->
+    <div class="modal-overlay" id="viberManualModal">
+        <div class="modal-box viber-modal-box">
+            <h2 class="modal-title">Dërgo porosinë në Viber</h2>
+            <p class="modal-text">Kopjoni porosinë, hapni Viber dhe bëjeni paste në bisedë për ta dërguar.</p>
+            <textarea id="viberOrderMessage" class="viber-message" readonly></textarea>
+            <div class="viber-actions">
+                <button class="btn btn-primary" onclick="copyViberOrderMessage()">Kopjo porosinë</button>
+                <button class="btn btn-viber" onclick="openViberChat()">Hap Viber</button>
+            </div>
+            <button class="btn btn-outline" style="width:100%; margin-top:12px;" onclick="closeViberModal()">Mbyll dritaren</button>
         </div>
     </div>
 
@@ -2221,7 +2281,7 @@ gerdocpizza.com`;
             
             // Set Hrefs for Modal Buttons
             document.getElementById('btn-wa').href = `https://wa.me/${PHONE_NUMBER_INT}?text=${preparedEncodedMessage}`;
-            document.getElementById('btn-viber').href = `viber://chat?number=%2B${PHONE_NUMBER_INT}&text=${preparedEncodedMessage}`;
+            document.getElementById('btn-viber').href = "#";
             
             document.getElementById('orderModal').classList.add('active');
         }
@@ -2234,23 +2294,25 @@ gerdocpizza.com`;
             preparedOrderMessage = latestOrderMessage;
             preparedEncodedMessage = encodeURIComponent(latestOrderMessage);
 
-            const viberChatUrl = `viber://chat?number=%2B${PHONE_NUMBER_INT}&text=${preparedEncodedMessage}`;
-            let viberOpened = false;
-            const markOpened = () => { viberOpened = true; };
-
-            await copyTextToClipboard(latestOrderMessage);
+            document.getElementById('viberOrderMessage').value = latestOrderMessage;
             closeModal();
+            document.getElementById('viberManualModal').classList.add('active');
+        }
 
-            window.addEventListener('blur', markOpened, { once: true });
-            document.addEventListener('visibilitychange', () => {
-                if(document.hidden) markOpened();
-            }, { once: true });
+        async function copyViberOrderMessage() {
+            const message = document.getElementById('viberOrderMessage').value || preparedOrderMessage;
+            if(!message) return;
 
-            window.location.href = viberChatUrl;
-            setTimeout(() => {
-                if(viberOpened || document.hidden) return;
-                showToast("Mesazhi u kopjua. Nëse nuk shfaqet automatikisht në Viber, bëni paste në bisedë.");
-            }, 1200);
+            await copyTextToClipboard(message);
+            showToast("Porosia u kopjua me sukses.");
+        }
+
+        function openViberChat() {
+            window.location.href = `viber://chat?number=%2B${PHONE_NUMBER_INT}`;
+        }
+
+        function closeViberModal() {
+            document.getElementById('viberManualModal').classList.remove('active');
         }
 
         function copyTextToClipboard(text) {
