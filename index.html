@@ -25,7 +25,7 @@
     <!-- Meta SEO Tags -->
     <title>Gerdoc Pizza | Porosit Pizza në Batllavë / Podujevë</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23f59e0b' d='M8 6l50 19L25 58z'/%3E%3Cpath fill='%23fed7aa' d='M8 6c15 2 34 9 50 19-5 3-11 2-17-1C30 19 19 14 8 13z'/%3E%3Ccircle cx='31' cy='29' r='5' fill='%23dc2626'/%3E%3Ccircle cx='42' cy='36' r='4' fill='%23dc2626'/%3E%3Ccircle cx='26' cy='43' r='4' fill='%23dc2626'/%3E%3Cpath fill='%23fff7ed' d='M20 24l6 2-4 5zm18 1l6 3-5 4zm-7 18l5 3-5 4z'/%3E%3C/svg%3E">
-    <meta name="description" content="Porosit pizza, samun dhe pije nga Gerdoc Pizza në Batllavë / Podujevë. Dërgesë dhe marrje në lokal çdo ditë nga ora 12:00 deri 02:00.">
+    <meta name="description" content="Porosit pizza, samun dhe pije nga Gerdoc Pizza në Batllavë / Podujevë. Dërgesë dhe marrje në lokal nga ora 12:00 deri 02:00. Të mërkurën: pushim javor.">
     <meta name="keywords" content="Gerdoc Pizza, pizza Batllavë, pizza Podujevë, porosit pizza, pizza delivery Kosovë, samun, pizza Kosovë">
     
     <!-- Google Fonts -->
@@ -157,6 +157,13 @@
         
         .btn-whatsapp { background-color: #25D366; color: #fff; }
         .btn-viber { background-color: #7360F2; color: #fff; }
+
+        [data-order-action]:disabled,
+        [data-order-action][aria-disabled="true"] {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
 
         /* Form Controls */
         .form-group {
@@ -1086,6 +1093,33 @@
             flex-direction: column;
             gap: 12px;
         }
+        .weekly-closure-dialog {
+            margin: auto;
+            padding: 0;
+            width: min(450px, calc(100% - 40px));
+            max-height: calc(100dvh - 40px);
+            border: none;
+            border-radius: var(--radius-md);
+            background: transparent;
+            color: var(--text-main);
+        }
+        .weekly-closure-dialog::backdrop {
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: blur(5px);
+        }
+        .weekly-closure-dialog .modal-box {
+            transform: none;
+        }
+        .weekly-closure-dialog .modal-title {
+            color: var(--primary-accent);
+        }
+        .weekly-closure-dialog .modal-text {
+            line-height: 1.6;
+        }
+        .weekly-closure-dialog button:focus-visible {
+            outline: 2px solid var(--primary-accent);
+            outline-offset: 4px;
+        }
         .viber-modal-box {
             max-width: 680px;
             text-align: left;
@@ -1373,16 +1407,14 @@
     </style>
 </head>
 <body>
-<<<<<<< HEAD
-=======
-    <div class="annual-vacation-popup" role="alertdialog" aria-modal="true" aria-labelledby="annualVacationTitle">
-        <div class="annual-vacation-popup__box">
-            <div class="annual-vacation-popup__title" id="annualVacationTitle">Njoftim</div>
-            <p class="annual-vacation-popup__text">Jemi në pushim vjetor nga 31 gusht deri më datën 6 shtator.</p>
+    <dialog class="weekly-closure-dialog" id="weeklyClosureDialog" role="alertdialog" aria-labelledby="weeklyClosureTitle" aria-describedby="weeklyClosureText">
+        <div class="modal-box">
+            <h2 class="modal-title" id="weeklyClosureTitle">Njoftim</h2>
+            <p class="modal-text" id="weeklyClosureText"><strong>Çdo të mërkurë, Gerdoc Pizza është në pushim javor.</strong><br>Sot nuk pranojmë porosi. Ju mirëpresim përsëri të enjten.</p>
+            <button class="btn btn-primary" type="button" onclick="document.getElementById('weeklyClosureDialog').close()" autofocus>E kuptova</button>
         </div>
-    </div>
+    </dialog>
 
->>>>>>> 09d5a3a8b65e7f350fa21966c8170ac565bad3b4
     <!-- Header -->
     <header>
         <div class="container header-inner">
@@ -1400,7 +1432,7 @@
                     <span>Shporta</span>
                     <span class="cart-count">0</span>
                 </button>
-                <button class="btn btn-primary" onclick="scrollToSection('orderSection')">Porosit Tani</button>
+                <button class="btn btn-primary" data-order-action onclick="scrollToSection('orderSection')">Porosit Tani</button>
             </div>
         </div>
     </header>
@@ -1422,6 +1454,7 @@
                         <div>
                             <div style="font-size: 0.8rem; color: var(--text-muted);">Orari i punës</div>
                             <div style="font-weight: 600;">12:00 – 02:00</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">E mërkurë: pushim javor</div>
                         </div>
                     </div>
                     <div class="info-card">
@@ -1434,7 +1467,7 @@
                 </div>
 
                 <div style="display:flex; gap:12px; flex-wrap: wrap;">
-                    <button class="btn btn-primary" onclick="scrollToSection('orderSection')">Porosit Tani</button>
+                    <button class="btn btn-primary" data-order-action onclick="scrollToSection('orderSection')">Porosit Tani</button>
                     <a href="tel:+38345310580" class="btn btn-outline">Thirr Direkt</a>
                 </div>
             </div>
@@ -1564,7 +1597,7 @@
                         Sigurohuni që të dhënat janë të sakta para dërgimit.
                     </p>
 
-                    <button class="btn btn-primary" style="width:100%; height:50px; font-size: 1.1rem;" onclick="processCheckout()">
+                    <button class="btn btn-primary" data-order-action style="width:100%; height:50px; font-size: 1.1rem;" onclick="processCheckout()">
                         Dërgo Porosinë
                     </button>
                 </div>
@@ -1602,7 +1635,7 @@
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                     </div>
                     <h3>Orari i punës</h3>
-                    <p>Hapur çdo ditë<br>12:00 – 02:00</p>
+                    <p>12:00 – 02:00<br>E mërkurë: pushim javor</p>
                     <button class="btn btn-outline" style="width:100%; margin-top:auto;" onclick="scrollToSection('menuSection')">Shiko Menunë</button>
                 </div>
             </div>
@@ -1616,7 +1649,7 @@
     <footer>
         <div class="container">
             <div class="footer-logo">Gerdoc Pizza</div>
-            <p class="footer-text">Pizza e freskët çdo ditë nga ora 12:00 deri 02:00.</p>
+            <p class="footer-text">Pizza e freskët nga ora 12:00 deri 02:00. Të mërkurën: pushim javor.</p>
             <div class="footer-divider"></div>
             <div class="footer-bottom">
                 <p>Rruga Hysen Gerdovci, Batllavë / Podujevë, Kosovë &bull; 045 310 580</p>
@@ -1644,7 +1677,7 @@
                 <span>Totali:</span>
                 <span id="drawer-price" style="color: var(--primary-accent)">0.00€</span>
             </div>
-            <button class="btn btn-primary" style="width:100%;" onclick="toggleCart(); scrollToSection('orderSection')">Kalo te pagesa</button>
+            <button class="btn btn-primary" data-order-action style="width:100%;" onclick="toggleCart(); scrollToSection('orderSection')">Kalo te pagesa</button>
         </div>
     </div>
 
@@ -1655,8 +1688,8 @@
             <p class="modal-text">Kopjoni porosinë, hapni Viber dhe bëjeni paste në bisedë për ta dërguar.</p>
             <textarea id="viberOrderMessage" class="viber-message" readonly></textarea>
             <div class="viber-actions">
-                <button class="btn btn-primary" onclick="copyViberOrderMessage()">Kopjo porosinë</button>
-                <button class="btn btn-viber" onclick="openViberChat()">Hap Viber</button>
+                <button class="btn btn-primary" data-order-action onclick="copyViberOrderMessage()">Kopjo porosinë</button>
+                <button class="btn btn-viber" data-order-action onclick="openViberChat()">Hap Viber</button>
             </div>
             <button class="btn btn-outline" style="width:100%; margin-top:12px;" onclick="closeViberModal()">Mbyll dritaren</button>
         </div>
@@ -1673,11 +1706,11 @@
             <p class="modal-text">Të dhënat tuaja dhe detajet e shportës u përgatitën me sukses. Zgjidhni mënyrën e konfirmimit të porosisë.</p>
             
             <div class="modal-actions">
-                <a id="btn-wa" href="#" class="btn btn-whatsapp" target="_blank" onclick="closeModal()">
+                <a id="btn-wa" href="#" class="btn btn-whatsapp" data-order-action target="_blank" onclick="openWhatsAppOrder(event)">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                     Konfirmo në WhatsApp
                 </a>
-                <a id="btn-viber" href="#" class="btn btn-viber" onclick="openViberOrder(event)">
+                <a id="btn-viber" href="#" class="btn btn-viber" data-order-action onclick="openViberOrder(event)">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                     Konfirmo në Viber
                 </a>
@@ -1763,41 +1796,103 @@
         let map, marker;
         let locationSelected = false;
 
+        const businessClock = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'Europe/Belgrade',
+            weekday: 'short',
+            hour: 'numeric',
+            hourCycle: 'h23'
+        });
+        const regularClosedNotice = document.getElementById('notice-closed').innerHTML;
+        let wasWeeklyClosed = false;
+
 
         /* --- INITIALIZATION --- */
         document.addEventListener('DOMContentLoaded', () => {
-            updateStatus();
-            setInterval(updateStatus, 60000); // Check every minute
-            
             renderFilters();
             renderMenu();
+            scheduleStatusUpdate();
+            window.addEventListener('focus', updateStatus);
+            window.addEventListener('pageshow', updateStatus);
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) updateStatus();
+            });
             initMap();
         });
 
         /* --- DYNAMIC STATUS LOGIC --- */
+        function getBusinessStatus(date = new Date()) {
+            const parts = businessClock.formatToParts(date);
+            const weekday = parts.find(part => part.type === 'weekday').value;
+            const hour = Number(parts.find(part => part.type === 'hour').value);
+            // Wednesday is closed for the entire local calendar day, including 00:00–02:00.
+            const isWeeklyClosed = weekday === 'Wed';
+            return { isWeeklyClosed, isOpen: !isWeeklyClosed && (hour >= 12 || hour < 2) };
+        }
+
+        function scheduleStatusUpdate() {
+            updateStatus();
+            // Align checks to the minute so an open page changes at local midnight.
+            setTimeout(scheduleStatusUpdate, 60000 - (Date.now() % 60000));
+        }
+
+        function showWeeklyClosurePopup() {
+            const dialog = document.getElementById('weeklyClosureDialog');
+            if (!dialog.open) dialog.showModal();
+        }
+
+        function syncOrderingControls(isWeeklyClosed = getBusinessStatus().isWeeklyClosed) {
+            document.querySelectorAll('[data-order-action]').forEach(control => {
+                if (control.tagName === 'BUTTON') control.disabled = isWeeklyClosed;
+                control.setAttribute('aria-disabled', String(isWeeklyClosed));
+            });
+        }
+
+        function ensureOrderingAvailable(event) {
+            // Always recheck at the action, including orders prepared before midnight.
+            if (!getBusinessStatus().isWeeklyClosed) return true;
+            if (event) event.preventDefault();
+            updateStatus();
+            showWeeklyClosurePopup();
+            return false;
+        }
+
         function updateStatus() {
-            const d = new Date();
-            // Force Europe/Belgrade or Tirane time to handle Kosova schedule safely across clients
-            const options = { timeZone: 'Europe/Belgrade', hour: 'numeric', hourCycle: 'h23' };
-            const hourStr = new Intl.DateTimeFormat('en-US', options).format(d);
-            const hour = parseInt(hourStr, 10);
-            
-            // Open from 12:00 up to 01:59 (so hours 12 to 23, and 0 to 1)
-            const isOpen = (hour >= 12 || hour < 2);
-            
+            const { isWeeklyClosed, isOpen } = getBusinessStatus();
             const bBadge = document.getElementById('badge-status');
             const bText = document.getElementById('badge-status-text');
             const notice = document.getElementById('notice-closed');
 
-            if (isOpen) {
+            if (isWeeklyClosed) {
+                bBadge.className = 'status-badge status-closed';
+                bText.textContent = 'Mbyllur · Pushim javor';
+                notice.innerHTML = '<strong>Sot është e mërkurë – pushim javor.</strong><br>Gerdoc Pizza nuk pranon porosi të mërkurave. Ju mirëpresim përsëri të enjten.';
+                notice.style.display = 'block';
+                closeModal();
+                closeViberModal();
+                preparedOrderMessage = '';
+                preparedEncodedMessage = '';
+                document.getElementById('viberOrderMessage').value = '';
+                document.getElementById('btn-wa').removeAttribute('href');
+                document.getElementById('btn-viber').removeAttribute('href');
+                if (!wasWeeklyClosed) showWeeklyClosurePopup();
+            } else if (isOpen) {
                 bBadge.className = 'status-badge status-open';
                 bText.textContent = 'Hapur tani · 12:00 – 02:00';
                 notice.style.display = 'none';
             } else {
                 bBadge.className = 'status-badge status-closed';
                 bText.textContent = 'Mbyllur · Hapet në 12:00';
+                notice.innerHTML = regularClosedNotice;
                 notice.style.display = 'block';
             }
+
+            if (!isWeeklyClosed && wasWeeklyClosed) {
+                document.getElementById('weeklyClosureDialog').close();
+                document.getElementById('btn-wa').href = '#';
+                document.getElementById('btn-viber').href = '#';
+            }
+            wasWeeklyClosed = isWeeklyClosed;
+            syncOrderingControls(isWeeklyClosed);
         }
 
         /* --- UI HELPERS --- */
@@ -1926,7 +2021,7 @@
                                         <input type="text" class="qty-input" id="qty-${item.id}" value="1" readonly>
                                         <button class="qty-btn" onclick="updateQty('${item.id}', 1)">+</button>
                                     </div>
-                                    <button class="cart-btn" onclick="addToCart('${item.id}')">
+                                    <button class="cart-btn" data-order-action onclick="addToCart('${item.id}')">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                                     </button>
                                 </div>
@@ -1936,6 +2031,7 @@
                 `;
                 grid.innerHTML += cardHtml;
             });
+            syncOrderingControls();
         }
 
         // Live calculation on Card
@@ -1981,6 +2077,7 @@
         }
 
         function addToCart(id) {
+            if (!ensureOrderingAvailable()) return;
             const item = MENU.find(x => x.id === id);
             const card = document.getElementById(`card-${id}`);
             
@@ -2039,6 +2136,7 @@
         }
 
         function changeCartQty(uid, delta) {
+            if (delta > 0 && !ensureOrderingAvailable()) return;
             let existing = cart.find(c => c.uid === uid);
             if(existing) {
                 existing.qty += delta;
@@ -2088,7 +2186,7 @@
                                     <div class="qty-control">
                                         <button class="qty-btn" onclick="changeCartQty('${c.uid}', -1)">-</button>
                                         <input type="text" class="qty-input" value="${c.qty}" readonly>
-                                        <button class="qty-btn" onclick="changeCartQty('${c.uid}', 1)">+</button>
+                                        <button class="qty-btn" data-order-action onclick="changeCartQty('${c.uid}', 1)">+</button>
                                     </div>
                                     <button class="btn-remove" onclick="removeCartItem('${c.uid}')">Hiq</button>
                                 </div>
@@ -2101,6 +2199,7 @@
             document.querySelectorAll('.cart-count').forEach(el => el.innerText = itemCnt);
             document.getElementById('drawer-price').innerText = totalEur.toFixed(2) + '€';
             document.getElementById('summary-price').innerText = totalEur.toFixed(2) + '€';
+            syncOrderingControls();
         }
 
 
@@ -2257,6 +2356,7 @@ gerdocpizza.com`;
         }
 
         function processCheckout() {
+            if (!ensureOrderingAvailable()) return;
             // Validation
             if (cart.length === 0) {
                 showToast("Shporta juaj është e zbrazët."); return;
@@ -2295,8 +2395,14 @@ gerdocpizza.com`;
             document.getElementById('orderModal').classList.add('active');
         }
 
+        function openWhatsAppOrder(event) {
+            if (!ensureOrderingAvailable(event)) return;
+            closeModal();
+        }
+
         async function openViberOrder(event) {
             event.preventDefault();
+            if (!ensureOrderingAvailable(event)) return;
             const tipo = document.querySelector('input[name="orderType"]:checked').value;
             const latestOrderMessage = buildOrderMessage(tipo);
 
@@ -2309,6 +2415,7 @@ gerdocpizza.com`;
         }
 
         async function copyViberOrderMessage() {
+            if (!ensureOrderingAvailable()) return;
             const message = document.getElementById('viberOrderMessage').value || preparedOrderMessage;
             if(!message) return;
 
@@ -2317,6 +2424,7 @@ gerdocpizza.com`;
         }
 
         function openViberChat() {
+            if (!ensureOrderingAvailable()) return;
             window.location.href = `viber://chat?number=%2B${PHONE_NUMBER_INT}`;
         }
 
